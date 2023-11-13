@@ -1,119 +1,22 @@
+<!DOCTYPE html>
 <html>
     <head>
-        <script src="https://cdn.jsdelivr.net/npm/phaser@3.55.2/dist/phaser.min.js"></script>
+    <title>Bullet Dodging Game</title>
+    <style>
+        body {
+        margin: 0;
+        }
+
+        canvas {
+        display: block;
+        margin: 0 auto;
+        }
+    </style>
     </head>
     <body>
-        <div>총알 피하기</div>     
+        <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.6.0/jquery.min.js"></script>
+        <script src="https://cdn.jsdelivr.net/npm/phaser@3.55.2/dist/phaser.min.js"></script>
+    <script src="game.js"></script>
     </body>
-    <script>
-        var config = {
-            type: Phaser.WEBGL,
-            width: 800,
-            height: 600,
-            backgroundColor: '#2d2d2d',
-            parent: 'phaser-example',
-            scene: {
-                preload: preload,
-                create: create,
-                update: update
-            }
-        };
-
-        var bullets;
-        var ship;
-        var speed;
-        var stats;
-        var cursors;
-        var lastFired = 0;
-
-        var game = new Phaser.Game(config);
-
-        function preload ()
-        {
-            this.load.image('ship', './assets/ship.png');
-            this.load.image('bullet', './assets/sprites/bullet.png');
-        }
-
-        function create ()
-        {
-            var Bullet = new Phaser.Class({
-
-                Extends: Phaser.GameObjects.Image,
-
-                initialize:
-
-                function Bullet (scene)
-                {
-                    Phaser.GameObjects.Image.call(this, scene, 0, 0, 'bullet');
-
-                    this.speed = Phaser.Math.GetSpeed(400, 1);
-                },
-
-                // fire: function (x, y)
-                // {
-                //     this.setPosition(x, y - 50);
-
-                //     this.setActive(true);
-                //     this.setVisible(true);
-                // },
-
-                update: function (time, delta)
-                {
-                    this.y -= this.speed * delta;
-
-                    if (this.y < -50)
-                    {
-                        this.setActive(false);
-                        this.setVisible(false);
-                    }
-                }
-
-            });
-
-            bullets = this.add.group({
-                classType: Bullet,
-                maxSize: 10,
-                runChildUpdate: true
-            });
-
-            ship = this.add.sprite(400, 500, 'ship').setDepth(1);
-
-            this.ship.setCollideWorldBounds(true);
-
-            cursors = this.input.keyboard.createCursorKeys();
-
-            speed = Phaser.Math.GetSpeed(300, 1);
-        }
-
-        function update (time, delta)
-        {
-            if (cursors.left.isDown)
-            {
-                ship.x -= speed * delta;
-            } else if (cursors.right.isDown)
-            {
-                ship.x += speed * delta;
-            }
-
-            if (cursors.up.isDown)
-            {
-                ship.y -= speed * delta;
-            } else if (cursors.down.isDown)
-            {
-                ship.y += speed * delta;
-            }
-
-            // if (cursors.up.isDown && time > lastFired)
-            // {
-            //     var bullet = bullets.get();
-
-            //     if (bullet)
-            //     {
-            //         bullet.fire(ship.x, ship.y);
-
-            //         lastFired = time + 50;
-            //     }
-            // }
-        }
-    </script>
 </html>
+        
