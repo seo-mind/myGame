@@ -16,7 +16,7 @@ let emitter; // 효과
 let frequency;
 let timeElapsed = 0;
 let end_flag;
-
+let music, collider_sound;
 
 const config = {
   type: Phaser.AUTO,

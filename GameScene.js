@@ -21,6 +21,12 @@ class GameScene extends Phaser.Scene {
     this.load.image('flame', 'assets/sprites/flame.png');
     this.load.image('end_flag', 'assets/sprites/end_flag.png');
     this.load.image('play_background', 'assets/sprites/play_background.png');
+    
+    // 배경음악 로드
+    this.load.audio('backgroundMusic', 'assets/sounds/backgroundMusic.mp3');
+
+    this.load.audio('collider_player', 'assets/sounds/collider_player.mp3');
+
   }
 
   create() {
@@ -33,7 +39,13 @@ class GameScene extends Phaser.Scene {
 
     // 아이템  , life 추가 but bullet size up 
 
-
+    // 배경음악 추가
+    music = this.sound.add('backgroundMusic');
+    collider_sound = this.sound.add('collider_player');
+    // 배경음악 재생
+    music.play({
+        loop: true // 음악이 끝나면 자동으로 다시 시작
+    });
 
     player = this.physics.add.sprite(config.width / 2, config.height -200, 'player'); // 밑 부분에 플레이어 생성
     
@@ -290,7 +302,7 @@ class GameScene extends Phaser.Scene {
     let angleToPlayer = Phaser.Math.Angle.BetweenPoints(bullet, player);
     let velocity = this.physics.velocityFromAngle(
       Phaser.Math.RadToDeg(angleToPlayer),
-      bullet1_speed
+      bullet_y
     );
     bullet.setVelocity(velocity.x, velocity.y);
 
@@ -312,22 +324,22 @@ class GameScene extends Phaser.Scene {
 
     bullet.disableBody(false, true);
     if (this.minusLife(player) == 0) {
-
-      this.physics.pause();
-      player.setTint(0xff0000);
-      isGameOver = true;  // 게임 종료 상태를 저장
-      timer.remove();
-      emitter.stop();
-      this.input.off('pointermove', this.movePlayer, this);
+      this.end_game();
+      collider_sound.play();
     }
   }
   winGame(player, end_flag) {
+    this.end_game(player);
+  }
+
+  end_game(){
     this.physics.pause();
     player.setTint(0xff0000);
     isGameOver = true;  // 게임 종료 상태를 저장
     timer.remove();
     emitter.stop();
     this.input.off('pointermove', this.movePlayer, this);
+    music.stop();
   }
 
 }
