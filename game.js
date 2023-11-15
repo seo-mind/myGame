@@ -15,7 +15,7 @@ let particles; // 효과
 let emitter; // 효과
 let frequency;
 let timeElapsed = 0;
-
+let end_flag;
 class BootScene extends Phaser.Scene {
   constructor() {
     super({ key: 'BootScene' });
@@ -61,21 +61,49 @@ class GameScene extends Phaser.Scene {
 
     this.load.image('shield', 'assets/sprites/shield.png');
     this.load.image('flame', 'assets/sprites/flame.png');
+    this.load.image('end_flag', 'assets/sprites/end_flag.png');
+    this.load.image('play_background', 'assets/sprites/play_background.png');
   }
 
   create() {
+    // 'background' 이미지를 반복해서 배경으로 사용
+    this.add.tileSprite(0, 0, game.config.width, game.config.height, 'play_background').setOrigin(0, 0);
+    end_flag = this.physics.add.sprite(config.width / 2, 40, 'end_flag');
+
+    // 제일 위에 깃발 놓자
+    // 난이도로 
+
+    // 아이템  , life 추가 but bullet size up 
 
 
-    player = this.physics.add.sprite(config.width / 2, config.height / 2, 'player');
+
+    player = this.physics.add.sprite(config.width / 2, config.height -200, 'player'); // 밑 부분에 플레이어 생성
+    //player = this.physics.add.sprite(config.width / 2, 100, 'player'); // 밑 부분에 플레이어 생성
     player.setCollideWorldBounds(true);
     player_scale = player.scale;
     // 카메라가 플레이어를 따라가도록 설정
     this.cameras.main.startFollow(player);
-    this.cameras.main.setViewport(0, 0, 500, 500);
+    //this.cameras.main.setFollowOffset(0, 0);
+    
+    this.cameras.main.setViewport(0, 0, this.physics.world.bounds.width,800);
+    
+
+    this.cameras.main.setBounds(0, 0, config.width, config.height)
+    // x와 y: 제한 영역의 시작점(왼쪽 상단 모서리)을 지정합니다. 이 값은 픽셀 단위입니다.
+    // width와 height: 제한 영역의 크기를 지정합니다. 이 값도 픽셀 단위입니다.
+    //this.cameras.main.setBounds(0, config.height / 2, config.width, config.height);
+
+
+    // 카메라의 오프셋 설정
+    //
+    // 카메라의 오프셋 설정
+    
     // 카메라의 이동 범위를 플레이어 주변의 800x600 영역으로 제한
-    this.cameras.main.setBounds(player.x - 400, player.y - 300, 500, 500);
+    //this.cameras.main.setBounds(player.x - 400, player.y - 300, 500, 500);
+    
+    
     // 마우스 입력을 감지할 수 있도록 설정
-    this.input.on('pointermove', this.movePlayer, this);
+    //this.input.on('pointermove', this.movePlayer, this);
 
     bullet1 = this.physics.add.group();
     bullet2 = this.physics.add.group();
@@ -89,6 +117,7 @@ class GameScene extends Phaser.Scene {
     timeElapsed = 0;
     shieldTime = timeElapsed;
     timerText = this.add.text(15, 15, 'Time: 0', { fontSize: '30px', fill: '#fff' });
+    timerText.setScrollFactor(0); // 텍스트를 카메라에 고정
     frequency = 10;
     shieldYn = false;
     timer = this.time.addEvent({
@@ -211,6 +240,7 @@ class GameScene extends Phaser.Scene {
       this.physics.overlap(player, bullet2, this.endGame, null, this);
       this.physics.overlap(player, bullet3, this.endGame, null, this);
       this.physics.overlap(player, slowUps, this.collectslowUp, null, this);
+      this.physics.overlap(player, end_flag, this.winGame, null, this);
     }
 
 
@@ -315,16 +345,25 @@ class GameScene extends Phaser.Scene {
       player.setTint(0xff0000);
       isGameOver = true;  // 게임 종료 상태를 저장
       timer.remove();
+      emitter.stop();
       this.input.off('pointermove', this.movePlayer, this);
     }
+  }
+  winGame(player, end_flag) {
+    this.physics.pause();
+    player.setTint(0xff0000);
+    isGameOver = true;  // 게임 종료 상태를 저장
+    timer.remove();
+    emitter.stop();
+    this.input.off('pointermove', this.movePlayer, this);
   }
 
 }
 
 const config = {
   type: Phaser.AUTO,
-  width: 1200,
-  height: 1000,
+  width: 800,
+  height: 4000,
   backgroundColor: 'black',
   physics: {
     default: 'arcade',
